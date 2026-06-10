@@ -323,20 +323,1096 @@ const generatePhysicsFallback = (index: number): GeneratedQuestion => {
   };
 };
 
-const generateGeneralFallback = (index: number, request: QuestionRequest): GeneratedQuestion => {
-  const topicPrompt = request.topic || request.subject || "the topic";
-  const variants = [
-    `Explain ${topicPrompt} with a concise exam-style answer and one example.`,
-    `Describe the key points of ${topicPrompt} clearly and professionally.`,
-    `Write an exam-style response on ${topicPrompt} including definitions and one application.`,
-    `Summarize the concept of ${topicPrompt} in formal language and mention its importance.`,
-    `Give a structured answer about ${topicPrompt} using a definition, two details, and one example.`,
+const generateReasoningFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const seriesSets: Array<{ series: string; next: number; method: string }> = [
+    { series: "2, 5, 10, 17, 26", next: 37, method: "each term is one more than a square number (1+1, 4+1, 9+1, 16+1, 25+1)" },
+    { series: "3, 6, 12, 24, 48", next: 96, method: "each term is multiplied by 2" },
+    { series: "4, 7, 11, 16, 22", next: 29, method: "the differences increase by 1 each time: 3, 4, 5, 6" },
   ];
-  const question = variants[index % variants.length];
+
+  if (templateIndex === 0) {
+    const item = seriesSets[index % seriesSets.length];
+    return {
+      question: `Find the next number in the series: ${item.series}, ... and explain the rule.`,
+      answer: `${item.next}`,
+      solution: `The series ${item.series} follows a clear pattern: ${item.method}. Therefore the next number is ${item.next}.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Which item is the odd one out: Apple, Banana, Orange, Carrot? Explain your reasoning.`,
+      answer: `Carrot is the odd one out because it is a vegetable while the others are fruits.`,
+      solution: `Apple, Banana, and Orange are all fruits. Carrot is a vegetable, so it is different by food category and is the odd one out.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Riya walks 10 m north, then turns right and walks 5 m, then turns right again and walks 10 m. Which direction is she facing now? Explain your logic.`,
+      answer: `South`,
+      solution: `Starting north, the first right turn makes her face east. The second right turn makes her face south. Therefore she is facing south.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `If all cats are animals and some animals are furry, which of the following is definitely true? Explain your reasoning.`,
+      answer: `Some cats may be furry, but not all cats are necessarily furry.`,
+      solution: `All cats belong to the animal group. Since only some animals are furry, we cannot conclude that all cats are furry. The definite statement is that some cats may be furry.`,
+      difficulty: "hard",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Complete the analogy: Bird is to Nest as Fish is to ____. Explain the relationship.`,
+      answer: `Water`,
+      solution: `A nest is the natural place where a bird lives or rests. Similarly, water is the natural place where a fish lives. The relationship is habitat to animal.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `In a row of eight students labeled A to H, C is third from the left and F is two places to the right of C. What is F’s position from the left? Explain your reasoning.`,
+      answer: `Sixth from the left`,
+      solution: `If C is third from the left and F is two positions to the right of C, then F is third + 2 = fifth from the left. However, because we count C as third, F becomes the sixth position overall.`,
+      difficulty: "hard",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `A pattern alternates between even numbers and prime numbers: 2, 3, 4, ... What is the next term? Explain the rule.`,
+      answer: `5`,
+      solution: `The pattern alternates an even number and then a prime number. After 2 (even), 3 (prime), and 4 (even), the next term must be the next prime number, which is 5.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Given the statements: all dogs are animals, some animals are pets, is it true that all pets are dogs? Explain your reasoning.`,
+    answer: `No, not all pets are dogs.`,
+    solution: `All dogs belong to animals, and some animals are pets. This does not imply that all pets are dogs. Pets can also include cats, birds, and other animals.`,
+    difficulty: "medium",
+  };
+};
+
+const generateChemistryFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 10;
+  const coefficient = 2 + (index % 4);
+  const mass = 18 + ((index % 5) * 2);
+  const volume = 1 + (index % 4);
+  const mol = 0.5 + ((index % 4) * 0.5);
+  const acid = ["HCl", "H2SO4", "HNO3"][index % 3];
+  const base = ["NaOH", "KOH", "Ca(OH)2"][index % 3];
+  const gas = ["CO2", "O2", "H2"][index % 3];
+  const compound = ["NaCl", "CaCO3", "CH4"][index % 3];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Balance the equation: ${coefficient}Fe + O2 -> Fe2O3. State the balanced coefficients.`,
+      answer: `4Fe + 3O2 -> 2Fe2O3`,
+      solution: `To balance Fe, use 4 atoms on both sides and 3O2 gives 6 oxygen atoms, which match 2Fe2O3. Thus the balanced equation is 4Fe + 3O2 -> 2Fe2O3.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Calculate the mass of ${compound} required for 0.5 mol.`,
+      answer: `${mol * 16} g`,
+      solution: `Molar mass of ${compound} is 16 g/mol. For 0.5 mol, mass = 0.5 × 16 = ${mol * 16} g.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `What type of compound is ${acid} when dissolved in water? Explain.`,
+      answer: `An acid, because it releases H+ ions in water.`,
+      solution: `${acid} dissociates to release H+ ions in aqueous solution, which is the definition of an acid.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Describe one property of ${compound} and its common use.`,
+      answer: `${compound} is often used in basic reactions or fuel and is characterized by its simple molecular structure.`,
+      solution: `${compound} is a small molecule. For example, CH4 is a fuel gas used for heating and combustion.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Write the chemical equation for neutralization of ${acid} with ${base}.`,
+      answer: `${acid} + ${base} -> salt + H2O`,
+      solution: `A strong acid and strong base react to form a salt and water. The balanced form is ${acid} + ${base} -> salt + H2O.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `How many moles of gas are present in ${volume} L at STP?`,
+      answer: `${(volume / 22.4).toFixed(2)} mol`,
+      solution: `At STP, 1 mol gas occupies 22.4 L. So moles = ${volume} / 22.4 = ${(volume / 22.4).toFixed(2)} mol.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `Explain the difference between an element and a compound with one example each.`,
+      answer: `An element has only one type of atom, e.g. O2; a compound has two or more types of atoms, e.g. H2O.`,
+      solution: `Elements contain one kind of atom. Compounds are chemical combinations of different atoms. O2 is an element and H2O is a compound.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 7) {
+    return {
+      question: `What is the pH nature of a solution formed by mixing equal concentrations of ${acid} and ${base}?`,
+      answer: `Neutral or approximately pH 7.`,
+      solution: `A strong acid and strong base in equal amounts neutralize each other, creating a neutral solution with pH near 7.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Explain the concept of mole in chemistry and why it is useful.`,
+    answer: `A mole is a counting unit for atoms and molecules; it allows chemists to measure substances by number of particles.`,
+    solution: `A mole equals 6.022×10^23 particles. This standard quantity helps relate mass to number of atoms and molecules in calculations.`,
+    difficulty: "medium",
+  };
+};
+
+const generateBiologyFallback = (index: number, subject: string): GeneratedQuestion => {
+  const templateIndex = index % 10;
+  const organs = ["heart", "lungs", "leaf", "roots", "stomach"];
+  const functions = ["pumping blood", "gas exchange", "photosynthesis", "water uptake", "digestion"];
+  const animal = ["fish", "camel", "eagle", "frog", "human"][index % 5];
+  const feature = ["gills", "humps", "wings", "moist skin", "brain"][index % 5];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Explain the primary function of the ${organs[index % organs.length]} in ${subject}.`,
+      answer: `It is responsible for ${functions[index % functions.length]}.`,
+      solution: `The ${organs[index % organs.length]} performs the key role of ${functions[index % functions.length]}, which is vital for the organism's survival.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Describe one adaptation of a ${animal} and explain its benefit.`,
+      answer: `The ${animal} uses ${feature[index % feature.length]} to survive in its environment.`,
+      solution: `This adaptation helps the ${animal} by improving ${feature[index % feature.length]} function, which supports survival in its habitat.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `What is the role of DNA in living organisms?`,
+      answer: `DNA stores genetic information and directs protein synthesis.`,
+      solution: `DNA contains genes that code for proteins. These proteins determine traits and control cell functions, making DNA essential for inheritance and cell activity.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Explain how photosynthesis supports life on Earth.`,
+      answer: `Photosynthesis converts sunlight into chemical energy and produces oxygen.`,
+      solution: `Plants use sunlight, water, and carbon dioxide to make glucose and oxygen. This provides food and oxygen for many organisms.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Differentiate between respiration and photosynthesis in one sentence.`,
+      answer: `Respiration releases energy from food, while photosynthesis stores energy in glucose.`,
+      solution: `Respiration breaks down glucose to release energy. Photosynthesis builds glucose using sunlight energy.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `Name one function of the human immune system and explain its importance.`,
+      answer: `It defends the body against infections and helps maintain health.`,
+      solution: `The immune system identifies and destroys pathogens, preventing disease and keeping the body functioning.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `What is a food chain? Give one example.`,
+      answer: `A food chain shows how energy passes from one organism to another, for example grass -> rabbit -> fox.`,
+      solution: `Energy moves from producers to consumers in a linear sequence. The example demonstrates this flow from plants to herbivores to carnivores.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 7) {
+    return {
+      question: `Explain one reason why biodiversity is important to ecosystems.`,
+      answer: `Biodiversity increases ecosystem resilience and stability.`,
+      solution: `A variety of species ensures that ecosystems can adapt to changes and continue functioning, which supports long-term survival.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 8) {
+    return {
+      question: `Describe the role of the human brain in coordination.`,
+      answer: `The brain processes information and sends signals to muscles and organs.`,
+      solution: `It receives sensory input, interprets it, and issues coordinated responses, allowing complex movement and behavior.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `What is an ecosystem? Explain one example.`,
+    answer: `An ecosystem is a community of living organisms and their physical environment, such as a pond ecosystem.`,
+    solution: `It includes plants, animals, microbes, water, and soil interacting together. A pond ecosystem contains fish, insects, algae, and water that depend on each other.`,
+    difficulty: "easy",
+  };
+};
+
+const generateHistoryFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const events = [
+    "the Industrial Revolution",
+    "the Indian National Movement",
+    "the French Revolution",
+    "the American Civil War",
+    "the Renaissance",
+  ];
+  const leaders = ["Mahatma Gandhi", "Nelson Mandela", "Winston Churchill", "Queen Victoria", "Abraham Lincoln"];
+  const reforms = ["land reform", "education reform", "tax reform", "social reform", "legal reform"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Explain one major cause of ${events[index % events.length]}.`,
+      answer: `A major cause was social and economic change during the period.`,
+      solution: `${events[index % events.length]} began because of deep social and economic pressures that made existing systems unsustainable.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Describe one contribution of ${leaders[index % leaders.length]} to history.`,
+      answer: `They led a movement that changed society and inspired political transformation.`,
+      solution: `${leaders[index % leaders.length]} influenced history by leading people, shaping policies, and promoting major change.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `What was the significance of ${reforms[index % reforms.length]} in its era?`,
+      answer: `It improved fairness and stability in society by changing laws or institutions.`,
+      solution: `Such reform addressed a key problem of the time and helped create a more balanced social order.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Bring out one similarity between ${events[0]} and ${events[1]}.`,
+      answer: `Both involved large-scale change in society and the economy.`,
+      solution: `These events were driven by major shifts in technology, social structure, or political power, causing widespread change.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Explain why source-based history questions ask for both facts and interpretation.`,
+      answer: `Because they test knowledge and the ability to draw conclusions from evidence.`,
+      solution: `Historical sources provide data; interpretation shows what that data means, so both skills are required.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `What is the purpose of a constitution in a modern state?`,
+      answer: `It establishes fundamental laws and protects citizens' rights.`,
+      solution: `A constitution sets out the rules for governance and limits state power while safeguarding liberties.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `Name one long-term effect of colonial rule on a colonized region.`,
+      answer: `It often changed the economy, governance, or social structure in lasting ways.`,
+      solution: `Colonial rule introduced new systems and resources that continued to shape the region after independence.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `How does studying history help students understand the present?`,
+    answer: `History reveals how past decisions and events shape current society.`,
+    solution: `By learning past causes and effects, students can better understand modern institutions, conflicts, and cultures.`,
+    difficulty: "easy",
+  };
+};
+
+const generateGeographyFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const physical = ["erosion", "weathering", "volcanoes", "river meanders", "earthquakes"];
+  const human = ["urbanization", "migration", "agriculture", "industry", "tourism"];
+  const regions = ["desert", "coastal area", "mountain region", "river valley", "rainforest"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Explain one cause of ${physical[index % physical.length]}.`,
+      answer: `It happens because of natural forces such as wind, water, or tectonic movement.`,
+      solution: `${physical[index % physical.length]} results from natural energy moving earth materials or changing landscapes over time.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Describe one effect of ${human[index % human.length]} on the environment.`,
+      answer: `It changes land use, resource demand, or ecological balance.`,
+      solution: `${human[index % human.length]} alters how people interact with landscapes, often causing new environmental pressures.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `How does climate affect life in a ${regions[index % regions.length]}?`,
+      answer: `Climate determines the vegetation, wildlife, and human activities suited to that region.`,
+      solution: `The temperature and rainfall patterns of a ${regions[index % regions.length]} shape its ecosystems and the way people live there.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is a watershed, and why is it important?`,
+      answer: `A watershed drains water into a common outlet, and it is important for water management.`,
+      solution: `A watershed collects rainfall and directs it into rivers or lakes, affecting water supply and land use planning.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Explain the role of natural resources in regional development.`,
+      answer: `Natural resources support industry, agriculture, and infrastructure growth.`,
+      solution: `Resources such as water, minerals, and fertile soil attract investment and shape economic patterns in a region.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `Compare a coastal area with a mountain region in one way.`,
+      answer: `A coastal area has sea influence, while a mountain region has higher altitude and cooler climate.`,
+      solution: `Coastal areas experience maritime climate effects and access to the sea, whereas mountains are shaped by height and terrain.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `What is sustainable development, and why is it essential?`,
+      answer: `It meets present needs without harming future generations.`,
+      solution: `Sustainable development balances economic growth, social welfare, and environmental protection for the long term.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Define a population and give one example of how it is measured.`,
+    answer: `A population is a group of people in an area; it can be measured by census count.`,
+    solution: `Geographers measure population size, density, or growth using data from surveys or censuses.`,
+    difficulty: "easy",
+  };
+};
+
+const generateEconomicsFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const terms = ["demand", "supply", "inflation", "GDP", "fiscal policy"];
+  const quantities = [100, 200, 300, 400, 500];
+  const prices = [10, 20, 30, 40, 50];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Define ${terms[index % terms.length]} and give one example.`,
+      answer: `${terms[index % terms.length]} refers to ${terms[index % terms.length]} in the economy.`,
+      solution: `This concept describes how ${terms[index % terms.length]} works in markets, such as how prices or production respond to changes.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `If quantity demanded rises from ${quantities[index % quantities.length]} to ${quantities[(index + 1) % quantities.length]} when price falls, what does this indicate?`,
+      answer: `It indicates a normal demand response to a lower price.`,
+      solution: `Demand typically increases when price decreases; this shows the law of demand in action.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Explain the impact of a government subsidy on ${terms[index % terms.length]}.`,
+      answer: `A subsidy lowers costs and increases supply or consumption.`,
+      solution: `Subsidies reduce producer or consumer cost, shifting supply/demand and influencing market outcomes.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is GDP and why is it used as an economic indicator?`,
+      answer: `GDP measures the total value of goods and services produced in an economy.`,
+      solution: `GDP indicates economic size and growth, helping compare performance over time and across countries.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Describe one consequence of high inflation.`,
+      answer: `High inflation reduces purchasing power and uncertainty in the economy.`,
+      solution: `When prices rise rapidly, consumers can buy less with the same income, which can harm savings and investment.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `What role does interest rate policy play in controlling inflation?`,
+      answer: `Higher interest rates can reduce inflation by slowing demand.`,
+      solution: `Central banks raise rates to make borrowing more expensive, which reduces spending and eases price pressure.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `How does a free market differ from a planned economy?`,
+      answer: `A free market relies on supply and demand while a planned economy uses government direction.`,
+      solution: `In a free market, prices and output are determined privately; in a planned economy, authorities decide production and distribution.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Explain the concept of scarcity in economics.`,
+    answer: `Scarcity means limited resources relative to unlimited wants.`,
+    solution: `Economics studies how individuals and societies allocate scarce resources to satisfy needs and wants.`,
+    difficulty: "easy",
+  };
+};
+
+const generateComputerScienceFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const structures = ["array", "linked list", "stack", "queue", "binary tree"];
+  const algorithms = ["search", "sort", "recursion", "iteration", "graph traversal"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Explain one advantage of using a ${structures[index % structures.length]} in programming.`,
+      answer: `It allows efficient access and organization of data for specific tasks.`,
+      solution: `${structures[index % structures.length]} provides a structure suited to its use case, such as fast indexing or ordered insertion.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `What is the time complexity of a simple ${algorithms[index % algorithms.length]} algorithm?`,
+      answer: `Typically O(n) or O(n log n) depending on implementation.`,
+      solution: `${algorithms[index % algorithms.length]} algorithms vary, but many basic forms process each element or sort data with this time complexity.`,
+      difficulty: "hard",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Describe the difference between hardware and software.`,
+      answer: `Hardware is physical equipment; software is the programs that run on it.`,
+      solution: `Hardware includes devices and circuits, while software consists of code and instructions controlling the hardware.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What does debugging mean in computer science?`,
+      answer: `Finding and fixing errors in code.`,
+      solution: `Debugging involves locating faults, understanding their cause, and correcting the program so it runs correctly.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Explain the purpose of an algorithm with one example.`,
+      answer: `An algorithm is a step-by-step procedure for solving a problem, such as sorting numbers.`,
+      solution: `Algorithms define clear steps to complete tasks. Sorting is a common example where the method arranges data in order.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `What is the role of a compiler in programming?`,
+      answer: `It translates source code into machine code.`,
+      solution: `A compiler converts human-readable code into a binary form the computer can execute.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `Why is data security important in computer applications?`,
+      answer: `It protects sensitive information from unauthorized access.`,
+      solution: `Security prevents data breaches, ensures privacy, and maintains user trust in applications.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Define programming language and give one example.`,
+    answer: `A programming language is a set of rules for writing software, such as Python.`,
+    solution: `Languages like Python let developers write instructions that computers interpret and execute.`,
+    difficulty: "easy",
+  };
+};
+
+const generateCommerceFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const topics = ["profit", "loss", "accounts", "trade", "marketing"];
+  const amounts = [1000, 2000, 2500, 3000, 4000];
+
+  if (templateIndex === 0) {
+    return {
+      question: `If a product is sold for ${amounts[index % amounts.length]} after a 20% discount, what was the marked price?`,
+      answer: `Rs. ${(amounts[index % amounts.length] / 0.8).toFixed(0)}`,
+      solution: `Selling price = marked price × 0.8, so marked price = ${amounts[index % amounts.length]} ÷ 0.8 = Rs. ${(amounts[index % amounts.length] / 0.8).toFixed(0)}.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Explain one function of accounting in business.`,
+      answer: `It records financial transactions and helps decision-making.`,
+      solution: `Accounting provides accurate records of money flow, which supports planning, control, and reporting.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `What is a balance sheet?`,
+      answer: `It is a financial statement showing assets, liabilities, and owner’s equity.`,
+      solution: `A balance sheet summarizes what a business owns and owes at a specific time, showing financial position.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Describe one advantage of online marketing for modern businesses.`,
+      answer: `It reaches more customers quickly and cost-effectively.`,
+      solution: `Online marketing uses digital channels to connect with buyers across regions, often at lower cost than traditional methods.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `What is the purpose of keeping a cash book?`,
+      answer: `To record all cash receipts and payments.`,
+      solution: `A cash book tracks cash flow, helping businesses manage liquidity and reconcile accounts.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `Explain the difference between fixed cost and variable cost.`,
+      answer: `Fixed cost stays the same regardless of output; variable cost changes with production.`,
+      solution: `Fixed costs like rent remain constant, while variable costs like materials increase as more units are produced.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `What does profit margin tell a business?`,
+      answer: `It shows how much profit is earned on sales.`,
+      solution: `Profit margin is profit divided by revenue, indicating efficiency in converting sales into profit.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `How does trade help an economy?`,
+    answer: `It allows specialization and access to goods not produced locally.`,
+    solution: `Trade expands markets and can increase wealth by letting countries exchange resources and products.`,
+    difficulty: "easy",
+  };
+};
+
+const generateEnglishFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const sentences = [
+    "She are going to school.",
+    "They has finished their homework.",
+    "He run every morning.",
+    "The books is on the table.",
+  ];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Correct the sentence: ${sentences[index % sentences.length]}`,
+      answer: `Correct form: ${sentences[index % sentences.length].replace("are", "is").replace("has", "have").replace("run", "runs").replace("is", "are")}`,
+      solution: `Identify the subject-verb agreement error and correct it according to the tense and subject.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Choose the correct word: She will ${index % 2 === 0 ? "accept" : "except"} the responsibility.`,
+      answer: `accept`,
+      solution: `Accept means to receive or agree, while except means excluding. In this sentence, accept is correct.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Write one sentence explaining the meaning of the phrase “break the ice.”`,
+      answer: `It means to start a conversation or make people feel more comfortable.`,
+      solution: `This idiom refers to easing tension at the start of an interaction, like breaking a layer of ice to begin a conversation.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is the main idea of a short passage about teamwork?`,
+      answer: `Teamwork helps people achieve goals more effectively by working together.`,
+      solution: `The passage would highlight cooperation, shared effort, and better results when people collaborate.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Identify the tense: “She had finished the work before noon.”`,
+      answer: `Past perfect tense.`,
+      solution: `The verb form had finished indicates an action completed before another past moment.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `Change to passive voice: “The teacher explains the lesson.”`,
+      answer: `The lesson is explained by the teacher.`,
+      solution: `In passive voice, the object becomes the subject and the verb is changed accordingly.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `Give a synonym for the word “happy” in one sentence.`,
+      answer: `Content, joyful, or pleased can all be synonyms for happy.`,
+      solution: `Choose a word with a similar meaning, such as content or joyful, and use it in a sentence.`,
+      difficulty: "easy",
+    };
+  }
+
+  return {
+    question: `Write a short formal sentence requesting permission to leave early.`,
+    answer: `Could I please leave early today due to an important appointment?`,
+    solution: `Use polite language and a clear reason to make the request formal and respectful.`,
+    difficulty: "medium",
+  };
+};
+
+const generateGeneralAwarenessFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const issues = ["climate change", "digital privacy", "global health", "renewable energy", "economic inequality"];
+  const countries = ["India", "USA", "China", "Brazil", "Germany"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Why is ${issues[index % issues.length]} an important global issue today?`,
+      answer: `It affects people, economies, and the environment worldwide.`,
+      solution: `${issues[index % issues.length]} has broad consequences, making it a priority for global discussion and action.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Name one recent development in ${countries[index % countries.length]} that impacted the world.`,
+      answer: `A policy change or technological advance that had international attention.`,
+      solution: `Recent developments can shape trade, health, or technology and often influence global discourse.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Explain one reason why voting is important in a democracy.`,
+      answer: `It allows citizens to choose leaders and influence policy.`,
+      solution: `Voting is a key way for people to participate in government and hold elected officials accountable.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is one benefit of digital literacy in modern society?`,
+      answer: `It helps people use technology safely and effectively.`,
+      solution: `Digital literacy improves communication, access to information, and awareness of online risks.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Give one example of a sustainable practice for everyday life.`,
+      answer: `Reducing plastic use or conserving water.`,
+      solution: `Small changes like using reusable bags or saving water contribute to environmental sustainability.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `Describe one effect of social media on public opinion.`,
+      answer: `It can spread information rapidly and shape people’s views.`,
+      solution: `Social media amplifies messages quickly, influencing how people think about events and issues.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `What is one challenge faced by cities today?`,
+      answer: `Traffic congestion, pollution, or housing shortages.`,
+      solution: `Urban growth creates problems like congestion and resource strain that cities must manage.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Why is education important for national development?`,
+    answer: `It builds skills and helps citizens contribute to the economy.`,
+    solution: `Education improves knowledge, productivity, and social well-being, enabling development and innovation.`,
+    difficulty: "medium",
+  };
+};
+
+const generateAptitudeFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 8;
+  const base = 10 + ((index % 5) * 5);
+  const rate = 5 + (index % 6);
+  const ratioA = 2 + (index % 5);
+  const ratioB = 3 + ((index + 1) % 5);
+
+  if (templateIndex === 0) {
+    return {
+      question: `If a number increases by 20% and becomes ${base + 4}, what was the original number?`,
+      answer: `${((base + 4) / 1.2).toFixed(2)}`,
+      solution: `Original = final ÷ 1.2 = ${(base + 4)} ÷ 1.2 = ${((base + 4) / 1.2).toFixed(2)}.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `A and B are in the ratio ${ratioA}:${ratioB}. If their total is ${base}, what is A’s share?`,
+      answer: `${((base * ratioA) / (ratioA + ratioB)).toFixed(0)}`,
+      solution: `A’s share = total × ratioA / (ratioA + ratioB) = ${base} × ${ratioA} / ${ratioA + ratioB} = ${((base * ratioA) / (ratioA + ratioB)).toFixed(0)}.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Calculate the average speed of a vehicle that travels ${base} km in ${rate} hours.`,
+      answer: `${(base / rate).toFixed(2)} km/h`,
+      solution: `Average speed = distance / time = ${base} / ${rate} = ${(base / rate).toFixed(2)} km/h.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is 15% of ${base}?`,
+      answer: `${(base * 0.15).toFixed(2)}`,
+      solution: `15% of ${base} = ${base} × 0.15 = ${(base * 0.15).toFixed(2)}.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `If a train takes ${rate} hours to cover ${base} km, how far will it go in 1 hour?`,
+      answer: `${(base / rate).toFixed(2)} km`,
+      solution: `Speed = distance ÷ time = ${base} ÷ ${rate} = ${(base / rate).toFixed(2)} km per hour.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 5) {
+    return {
+      question: `A product costs ${base} and sells for ${base + 20}. What is the profit?`,
+      answer: `${20}`,
+      solution: `Profit = selling price - cost price = ${base + 20} - ${base} = 20.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 6) {
+    return {
+      question: `If one-third of a group is ${base}, how many people are in the whole group?`,
+      answer: `${base * 3}`,
+      solution: `Whole group = ${base} × 3 = ${base * 3}.`,
+      difficulty: "easy",
+    };
+  }
+
+  return {
+    question: `Solve the series: ${base}, ${base + 2}, ${base + 4}, ... What is the next term?`,
+    answer: `${base + 6}`,
+    solution: `The series increases by 2 each time: ${base}, ${base + 2}, ${base + 4}, so next is ${base + 6}.`,
+    difficulty: "easy",
+  };
+};
+
+const generatePsychologyFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 6;
+  const topics = ["memory", "motivation", "emotion", "learning", "behavior"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Define ${topics[index % topics.length]} in the context of psychology.`,
+      answer: `${topics[index % topics.length]} refers to how the mind processes related experiences.`,
+      solution: `${topics[index % topics.length]} is a psychological concept that describes the mental function of ${topics[index % topics.length]}.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Explain one way people learn new skills.`,
+      answer: `They learn by practice, imitation, or feedback.`,
+      solution: `Learning occurs through repeated practice, observing others, and adjusting behavior based on results.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Why is emotional intelligence important?`,
+      answer: `It helps people manage feelings and relationships.`,
+      solution: `Emotional intelligence allows individuals to understand emotions and respond appropriately in social contexts.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `What is behaviorism?`,
+      answer: `A psychological approach that studies observable actions.`,
+      solution: `Behaviorism focuses on how behavior is learned and shaped by the environment, rather than internal thoughts.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `Give one example of a psychological experiment.`,
+      answer: `An experiment testing memory recall under different conditions.`,
+      solution: `Researchers might compare how well people remember words when distracted versus undistracted to study memory.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `What is the difference between sensation and perception?`,
+    answer: `Sensation is receiving stimuli, perception is interpreting them.`,
+    solution: `Sensation gathers raw data through senses; perception organizes that data into meaningful experience.`,
+    difficulty: "medium",
+  };
+};
+
+const generateSociologyFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 6;
+  const topics = ["culture", "social norms", "family", "social change", "community"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Define ${topics[index % topics.length]} in sociology.`,
+      answer: `${topics[index % topics.length]} is a set of shared practices or structures in society.`,
+      solution: `${topics[index % topics.length]} explains how groups of people behave and relate in society.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `Explain why social norms are important for communities.`,
+      answer: `They guide behavior and help maintain social order.`,
+      solution: `Norms provide expectations for conduct, making interaction predictable and stable in society.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+      return {
+        question: `What is social change and one example of it?`,
+        answer: `Social change is a shift in society, such as changing gender roles or technology use.`,
+        solution: `It occurs when attitudes, institutions, or behaviors evolve over time, for example the spread of social media influencing communication.`,
+        difficulty: "medium",
+      };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Describe one function of the family in society.`,
+      answer: `It provides care, socialization, and emotional support.`,
+      solution: `Families teach values, look after members, and help children learn how to live in their culture.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `What does the term “community” mean in sociology?`,
+      answer: `A group of people connected by common interests, location, or identity.`,
+      solution: `Communities share social ties, support members, and often cooperate around shared goals.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `How do social institutions influence individual behavior?`,
+    answer: `They set rules and expectations that shape actions.`,
+    solution: `Institutions such as schools, families, and governments provide norms that individuals follow, guiding behavior in society.`,
+    difficulty: "medium",
+  };
+};
+
+const generatePoliticsFallback = (index: number): GeneratedQuestion => {
+  const templateIndex = index % 6;
+  const topics = ["democracy", "rights", "constitution", "government", "elections"];
+
+  if (templateIndex === 0) {
+    return {
+      question: `Define ${topics[index % topics.length]} and explain its role in a democratic state.`,
+      answer: `${topics[index % topics.length]} means ... and helps citizens participate in governance.`,
+      solution: `${topics[index % topics.length]} supports political systems by providing structure, rights, or participation mechanisms.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 1) {
+    return {
+      question: `What is the importance of free and fair elections?`,
+      answer: `They ensure legitimacy and accountability of leaders.`,
+      solution: `Elections let citizens choose representatives and hold governments responsible, which is essential for democracy.`,
+      difficulty: "easy",
+    };
+  }
+
+  if (templateIndex === 2) {
+    return {
+      question: `Explain one function of the constitution.`,
+      answer: `It defines government powers and protects citizens’ rights.`,
+      solution: `A constitution sets the rules for how a country is governed and limits authority to prevent abuse.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 3) {
+    return {
+      question: `Why are citizen rights important in a republic?`,
+      answer: `They protect individuals and ensure fair treatment by the state.`,
+      solution: `Rights guarantee freedoms and help maintain justice, allowing people to live with dignity.`,
+      difficulty: "medium",
+    };
+  }
+
+  if (templateIndex === 4) {
+    return {
+      question: `What does separation of powers mean?`,
+      answer: `Dividing government authority into separate branches.`,
+      solution: `It prevents concentration of power by assigning law-making, law-enforcing, and law-adjudicating roles to different institutions.`,
+      difficulty: "medium",
+    };
+  }
+
+  return {
+    question: `Describe one way citizens can participate in public life.`,
+    answer: `By voting, joining civic groups, or contacting representatives.`,
+    solution: `Participation includes voting in elections, engaging in public debates, and holding leaders accountable.`,
+    difficulty: "easy",
+  };
+};
+
+const generateGeneralFallback = (index: number, request: QuestionRequest): GeneratedQuestion => {
+  const subject = request.subject || "general knowledge";
+  const topic = request.topic || subject;
+  const ordinal = index + 1;
+  const details = [
+    "one exam-style example",
+    "a clear definition",
+    "a practical application",
+    "a common mistake",
+    "one key point",
+    "one important step",
+    "a real-world use",
+    "a short comparison",
+    "a typical formula",
+    "a simple summary",
+  ];
+  const stems = [
+    `Explain ${topic} in ${subject}, including ${details[index % details.length]}.`,
+    `Describe the main idea of ${topic} in ${subject} and give ${details[index % details.length]}.`,
+    `Write a short exam-style response on ${topic} in ${subject} with ${details[index % details.length]}.`,
+    `Summarize ${topic} in ${subject} and mention ${details[index % details.length]}.`,
+    `What is ${topic} in ${subject}? Explain it with ${details[index % details.length]}.`,
+  ];
+  const question = `${stems[index % stems.length]} Explain with example ${ordinal}.`;
+
   return {
     question,
-    answer: `A clear and professional response giving a definition, important points, and one practical example for ${topicPrompt}.`,
-    solution: `Begin with a definition of ${topicPrompt}, follow with two or three important points or steps, and end with a short example or application.`,
+    answer: `A clear answer describing ${topic}, its purpose, and ${details[index % details.length]}.`,
+    solution: `Start with the definition of ${topic}, follow with ${details[index % details.length]}, and conclude with a short example or application that students can relate to.`,
     difficulty: "medium",
   };
 };
@@ -347,73 +1423,34 @@ const localQuestionTemplates = (request: QuestionRequest): GeneratedQuestion[] =
   const year = request.year;
   const exam = request.exam;
 
-  const banks: Record<string, GeneratedQuestion[]> = {
-    physics: [],
-    mathematics: [],
-    chemistry: [],
-    biology: [],
-    reasoning: [],
-    history: [],
-    geography: [],
-    economics: [],
-    "computer science": [],
-    commerce: [],
-    "general-awareness": [],
-    english: [],
-    aptitude: [],
-    general: [],
-  };
-
   const subjectGenerator: Record<string, (index: number, request: QuestionRequest) => GeneratedQuestion> = {
     physics: (index) => generatePhysicsFallback(index),
     mathematics: (index) => generateMathFallback(index),
-    chemistry: (index) => ({
-      question: `Balance the chemical equation and identify the product for question ${index + 1}.`,
-      answer: `Balance by adjusting coefficients so that each element is equal on both sides.`,
-      solution: `Count atoms of each element on both sides, adjust coefficients, and confirm the total is equal.`,
-      difficulty: "medium",
-    }),
-    biology: (index) => ({
-      question: `Explain the main function of a biological structure in ${request.subject} for question ${index + 1}.`,
-      answer: `It performs a key role such as energy production, storage, or transport.`,
-      solution: `Describe the structure, its function in the organism, and one example of its role.`, 
-      difficulty: "easy",
-    }),
-    reasoning: (index) => ({
-      question: `Solve this reasoning problem number ${index + 1} and explain your logic.`,
-      answer: `Apply the pattern or rule step by step to find the correct result.`,
-      solution: `Identify the sequence or logic rule, show each step, and give the final answer with explanation.`,
-      difficulty: index % 3 === 0 ? "hard" : "medium",
-    }),
-    english: (index) => ({
-      question: `Complete the sentence or choose the correct word in this English question ${index + 1}.`,
-      answer: `Select the option that best fits grammar and meaning.`,
-      solution: `Explain the grammar rule or word meaning, then justify the chosen answer.`,
-      difficulty: "medium",
-    }),
-    "general-awareness": (index) => ({
-      question: `Answer this general awareness question number ${index + 1}.`,
-      answer: `Use factual general knowledge to answer clearly and concisely.`,
-      solution: `State the correct fact, add one supporting detail, and connect it to the broader topic.`, 
-      difficulty: "easy",
-    }),
-    aptitude: (index) => ({
-      question: `Solve this aptitude question number ${index + 1} using calculation or reasoning.`,
-      answer: `Compute the result with clear steps.`,
-      solution: `Show the logic and calculation in order, then give the final numeric answer.`, 
-      difficulty: "medium",
-    }),
+    chemistry: (index) => generateChemistryFallback(index),
+    biology: (index) => generateBiologyFallback(index, request.subject),
+    reasoning: (index) => generateReasoningFallback(index),
+    history: (index) => generateHistoryFallback(index),
+    geography: (index) => generateGeographyFallback(index),
+    economics: (index) => generateEconomicsFallback(index),
+    "computer science": (index) => generateComputerScienceFallback(index),
+    commerce: (index) => generateCommerceFallback(index),
+    psychology: (index) => generatePsychologyFallback(index),
+    sociology: (index) => generateSociologyFallback(index),
+    "political science": (index) => generatePoliticsFallback(index),
+    english: (index) => generateEnglishFallback(index),
+    "general-awareness": (index) => generateGeneralAwarenessFallback(index),
+    aptitude: (index) => generateAptitudeFallback(index),
     general: (idx, req) => generateGeneralFallback(idx, req),
   };
 
-  const selected = banks[subject] ?? banks.general;
   const generator = subjectGenerator[subject] ?? subjectGenerator.general;
 
   const output: GeneratedQuestion[] = [];
   const used = new Set<string>();
   let index = 0;
+  const maxAttempts = Math.max(request.count * 10, 300);
 
-  while (output.length < request.count && index < request.count * 4) {
+  while (output.length < request.count && index < maxAttempts) {
     const candidate = generator(index, request);
     const questionText = candidate.question.trim();
     if (!used.has(questionText)) {
@@ -430,24 +1467,21 @@ const localQuestionTemplates = (request: QuestionRequest): GeneratedQuestion[] =
     index++;
   }
 
-  if (output.length < request.count) {
-    let fallbackIndex = 0;
-    while (output.length < request.count) {
-      const base = selected[fallbackIndex % selected.length] ?? { question: `Question ${fallbackIndex + 1}.`, answer: "Answer.", solution: "Solution.", difficulty: "medium" };
-      const questionVariant = `${base.question} (variant ${Math.floor(fallbackIndex / Math.max(1, selected.length)) + 1})`;
-      if (!used.has(questionVariant)) {
-        used.add(questionVariant);
-        output.push({
-          ...base,
-          question: `${request.mode === "pyq" ? "(Past paper style) " : ""}${questionVariant}`,
-          year,
-          exam,
-          topic: request.topic,
-          difficulty: base.difficulty ?? "medium",
-        });
-      }
-      fallbackIndex++;
+  while (output.length < request.count) {
+    const candidate = generateGeneralFallback(index, request);
+    const questionText = candidate.question.trim();
+    if (!used.has(questionText)) {
+      used.add(questionText);
+      output.push({
+        ...candidate,
+        year,
+        exam,
+        topic: request.topic,
+        difficulty: candidate.difficulty ?? "medium",
+        question: `${request.mode === "pyq" ? "(Past paper style) " : ""}${questionText}`,
+      });
     }
+    index++;
   }
 
   return output.slice(0, request.count);
